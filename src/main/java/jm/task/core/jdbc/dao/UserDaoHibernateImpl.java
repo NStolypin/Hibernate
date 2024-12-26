@@ -2,7 +2,6 @@ package jm.task.core.jdbc.dao;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.HibernateSessionFactoryUtil;
@@ -45,7 +44,7 @@ public class UserDaoHibernateImpl implements UserDao {
         User user = new User(name, lastName, age);
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.save(user);
+        session.persist(user);
         tx1.commit();
         session.close();
     }
@@ -54,7 +53,8 @@ public class UserDaoHibernateImpl implements UserDao {
     public void removeUserById(long id) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.createQuery("delete from User where id = :id").setParameter("id", id);
+        User user = session.get(User.class, id);
+        session.remove(user);
         tx1.commit();
         session.close();
     }
@@ -67,7 +67,6 @@ public class UserDaoHibernateImpl implements UserDao {
         tx1.commit();
         session.close();
         return users;
-
     }
 
     @Override
